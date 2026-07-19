@@ -1,0 +1,250 @@
+/*
+  The overlay.
+
+  It must be structurally impossible for this to block a click or intercept a
+  hover, regardless of z-index or animation state — hence pointer-events: none
+  on every element and aria-hidden on the root. The state machine is never
+  load-bearing for accessibility.
+*/
+
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Zero-size origin at document (0,0). Children are translated out of it, so
+     the layer itself can never affect layout or extend the scroll area. */
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.entity {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* JS writes translate3d() here in DOCUMENT space. Because the layer is
+     absolute rather than fixed, scrolling moves the entity for free — which
+     is what makes pausing the loop safe. */
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Sized by layer.ts from the shared body spec. */
+.breath {
+  position: absolute;
+  transform-origin: center;
+}
+
+/*
+  Deformation without net rotation: rotate into the travel axis, scale, rotate
+  back. The body stretches along its heading while the lighting and the roll
+  marking keep their own orientation — a stretched ball, not a tilted one.
+*/
+.ball {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--color-ink, #16150f);
+  box-shadow: 0 2px 12px rgba(22, 21, 15, 0.22);
+  transform: rotate(var(--r, 0rad)) scale(var(--sx, 1), var(--sy, 1))
+    rotate(calc(var(--r, 0rad) * -1));
+  transform-origin: center;
+}
+
+/* A fixed top-light so the circle reads as a body, not a dot. Deliberately
+   NOT on the roll layer: light comes from the room, not from the ball. */
+.ball::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 26%, rgba(251, 250, 246, 0.26), transparent 55%);
+}
+
+/*
+  The roll layer: faint surface markings that rotate by distance / radius.
+  Rolling is felt through these, so they stay just above the threshold of
+  notice — a material grain, not a beach ball.
+*/
+.roll {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  transform: rotate(var(--roll, 0rad));
+  background:
+    radial-gradient(circle at 50% 14%, rgba(251, 250, 246, 0.15), transparent 24%),
+    radial-gradient(circle at 22% 68%, rgba(251, 250, 246, 0.08), transparent 20%);
+}
+
+/* The gaze: a small pupil-like highlight that drifts toward whatever the
+   entity is paying attention to. Orientation without artwork. */
+.gaze {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--color-surface, #fbfaf6);
+  opacity: 0.92;
+  transform: translate(var(--gx, 0px), var(--gy, 0px));
+  /* Slow enough that falling asleep reads as eyes closing, not a cut. */
+  transition: opacity 700ms ease;
+}
+
+/* Asleep: eyes closed. The gaze IS the face, so hiding it is the pose. */
+.entity[data-state='SLEEP'] .gaze {
+  opacity: 0;
+}
+
+/* ── State dress ─────────────────────────────────────────────────────────── */
+
+/*
+  Breathing is asymmetric on purpose: a slow inhale to 40%, a quicker exhale
+  that sags just under neutral, then a long still beat. Symmetric sine
+  breathing is the single biggest "this is a CSS animation" tell.
+
+  REST breathes. NOTICE breathes identically — the reaction delay must be
+  invisible, or the entity looks like it reacted instantly after all.
+*/
+.entity[data-state='REST'] .breath,
+.entity[data-state='NOTICE'] .breath {
+  animation: breathe 4.4s ease-in-out infinite;
+}
+
+/* ALERT and EVADE: a quick squash — the startle — settling into a
+   slightly-inflated, attentive hold. Restarts naturally on entry because
+   the animation-name changes with the state attribute. */
+.entity[data-state='ALERT'] .breath,
+.entity[data-state='EVADE'] .breath {
+  animation: alertSquash 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* OBSERVE, FOLLOW, EXPLORE: quicker, shallower breathing. Interested, not
+   asleep. (While rolling, the JS deformation rides on top of this — both
+   are small enough to compose.) */
+.entity[data-state='OBSERVE'] .breath,
+.entity[data-state='FOLLOW'] .breath,
+.entity[data-state='EXPLORE'] .breath {
+  animation: observeBreathe 2.4s ease-in-out infinite;
+}
+
+/* SLEEP: long, deep, slow. Half the tempo, twice the depth. */
+.entity[data-state='SLEEP'] .breath {
+  animation: sleepBreathe 5.8s ease-in-out infinite;
+}
+
+@keyframes sleepBreathe {
+  0% {
+    transform: translateY(0.5px) scale(1.01, 0.99);
+  }
+  44% {
+    transform: translateY(-0.4px) scale(1.05, 0.955);
+  }
+  64% {
+    transform: translateY(0.6px) scale(1.002, 1.004);
+  }
+  82%,
+  100% {
+    transform: translateY(0.5px) scale(1.01, 0.99);
+  }
+}
+
+@keyframes breathe {
+  0% {
+    transform: translateY(0) scale(1, 1);
+  }
+  /* inhale — slow rise */
+  40% {
+    transform: translateY(-0.7px) scale(1.03, 0.972);
+  }
+  /* exhale — quicker, sagging just past neutral */
+  62% {
+    transform: translateY(0.2px) scale(0.994, 1.007);
+  }
+  /* the still beat before the next breath */
+  78%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+@keyframes alertSquash {
+  0% {
+    transform: scale(1, 1);
+  }
+  38% {
+    transform: scale(1.14, 0.84);
+  }
+  100% {
+    transform: scale(1.03, 1.03);
+  }
+}
+
+@keyframes observeBreathe {
+  0% {
+    transform: scale(1.01, 1.01);
+  }
+  45% {
+    transform: scale(1.032, 0.986);
+  }
+  68% {
+    transform: scale(1.004, 1.014);
+  }
+  82%,
+  100% {
+    transform: scale(1.01, 1.01);
+  }
+}
+
+/* Switched off by the visitor: a component, not a creature. Placed after
+   the state rules so it wins on equal specificity. */
+.entity[data-frozen] .breath {
+  animation: none;
+}
+
+/* ── The clouds ──────────────────────────────────────────────────────────
+   Paper-soft: overlapping borderless puffs in the surface tone, unified by
+   one drop-shadow on the parent so the cluster reads as a single body.
+   Positioned per frame by JS in document space, like the entity. */
+.cloudLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.cloud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 116px;
+  height: 34px;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 3px 8px rgba(22, 21, 15, 0.09));
+  opacity: 0;
+}
+
+.cloudPuff {
+  position: absolute;
+  border-radius: 999px;
+  background: var(--color-surface, #fbfaf6);
+}
+
+/*
+  Belt and braces. The loop never starts under reduced motion, so these
+  animations should be unreachable; this exists so no future change can
+  reintroduce movement here by accident.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .entity[data-state] .breath {
+    animation: none;
+  }
+  .entity {
+    will-change: auto;
+  }
+}

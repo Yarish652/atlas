@@ -1,0 +1,21 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+/* Precise per-marker hook, bound via cobe's CSS Anchor Positioning. */
+.pinAnchor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  bottom: anchor(top);
+  left: anchor(center);
+}

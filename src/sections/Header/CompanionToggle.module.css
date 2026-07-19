@@ -1,0 +1,95 @@
+/*
+  The companion switch.
+
+  A 12px circle in ink — the page's opposite colour — with the same white
+  gaze dot the real ball carries. State is told through fill, not chrome:
+  on = solid and breathing, off = hollow and still. No track, no knob,
+  no label; the control looks like the thing it controls.
+*/
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Generous hit area around a small mark. */
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+
+.toggle:active {
+  transform: scale(0.86);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.ball {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  /* The ring survives both states: invisible against the fill when on,
+     the entire drawing when off. */
+  box-shadow: inset 0 0 0 1.5px var(--color-ink);
+  transition: background-color 220ms ease;
+}
+
+/* The gaze dot — the portrait's face. */
+.ball::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3.5px;
+  height: 3.5px;
+  margin: -1.75px 0 0 -1.75px;
+  border-radius: 50%;
+  background: var(--color-paper, var(--color-surface, #fbfaf6));
+  opacity: 0.95;
+  transition: opacity 160ms ease;
+}
+
+/* Alive: the same asymmetric breath as the real one, in miniature. */
+.toggle[aria-checked='true'] .ball {
+  animation: toggleBreathe 4.4s ease-in-out infinite;
+}
+
+/* Off: hollow, faceless, still. */
+.toggle[aria-checked='false'] .ball {
+  background: transparent;
+}
+
+.toggle[aria-checked='false'] .ball::after {
+  opacity: 0;
+}
+
+@keyframes toggleBreathe {
+  0%,
+  78%,
+  100% {
+    transform: scale(1, 1);
+  }
+  40% {
+    transform: scale(1.1, 0.94);
+  }
+  62% {
+    transform: scale(0.99, 1.01);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle[aria-checked='true'] .ball {
+    animation: none;
+  }
+  .toggle,
+  .ball,
+  .ball::after {
+    transition: none;
+  }
+}

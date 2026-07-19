@@ -1,0 +1,57 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.heading {
+  font-size: var(--text-2xl);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-ink);
+  flex-shrink: 0;
+  /* Optically centres the 8px dot on the 18px label line. Centring it on
+     the whole two-line group landed it in the leading, marking nothing. */
+  margin-top: 5px;
+}
+
+.labelGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.value {
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+}
+
+.globeSlot {
+  position: relative;
+  width: 100%;
+  max-width: 22rem;
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr 1.2fr;
+  }
+
+  /* Anchor the globe to the right margin. Centred in its column it left
+     172px of dead space and aligned to nothing. */
+  .globeSlot {
+    margin-inline-start: auto;
+    margin-inline-end: 0;
+  }
+}

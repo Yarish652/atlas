@@ -1,0 +1,6 @@
+/*
+  Font loading — swap this file alone to change typefaces; every
+  component references the family via the --font-display / --font-body /
+  --font-mono tokens in tokens.css, never a literal font name.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');

@@ -1,0 +1,107 @@
+.heading {
+  font-size: var(--text-2xl);
+}
+
+/* Items hang off the start of their cell so the first one sits on the
+   page's left margin with every other block. */
+.item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  width: fit-content;
+  border-radius: var(--radius-sm);
+  cursor: default;
+}
+
+/* The orb: a small circular vessel for each mark — the section's original
+   language, now inhabited. */
+.orb {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: color-mix(in srgb, var(--color-ink) 76%, var(--color-paper));
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.orb svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.item:hover .orb,
+.item:focus-visible .orb {
+  color: var(--color-ink);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.item:hover .orb svg,
+.item:focus-visible .orb svg {
+  transform: rotate(-5deg) scale(1.06);
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+  color: var(--color-muted);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.item:hover .label,
+.item:focus-visible .label {
+  color: var(--color-ink);
+}
+
+/* One-line tooltip: what I use it for. Pure CSS, from data-tip. */
+.item::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  z-index: 5;
+  white-space: nowrap;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  opacity: 0;
+  translate: 0 4px;
+  pointer-events: none;
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    translate var(--duration-fast) var(--ease-out);
+}
+
+.item:hover::after,
+.item:focus-visible::after {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb,
+  .orb svg,
+  .label,
+  .item::after {
+    transition: none;
+  }
+  .item:hover .orb svg,
+  .item:focus-visible .orb svg {
+    transform: none;
+  }
+}

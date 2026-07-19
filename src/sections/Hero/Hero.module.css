@@ -1,0 +1,45 @@
+/* The hero is type only — no decorative visual. The measure is capped so the
+   column keeps its editorial line length rather than filling the viewport. */
+.copy {
+  max-width: 40rem;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
+  color: var(--color-muted);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 5vw + 1.25rem, 5.5rem);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+.tagline {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.2vw + 1rem, 1.75rem);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-snug);
+  color: var(--color-muted);
+  max-width: 32rem;
+  /* Without this the line breaks to a lone "people." */
+  text-wrap: balance;
+}
+
+.meta {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  /* The live clock must tick without a single pixel of layout shift. */
+  font-variant-numeric: tabular-nums;
+}
+
+.metaMuted {
+  color: var(--color-muted);
+}
+
