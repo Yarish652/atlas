@@ -11,7 +11,7 @@ const projects = [
       'Explainable speech scoring — deterministic phoneme analysis before LLM coaching, cutting false positives by ~80%.',
     image: '/projects/pronunciation.webp',
     imageAlt: 'AI Pronunciation Assessment — phoneme report scoring a recording 86/100',
-    demo: 'https://speech-correction.vercel.app/',
+    demo: 'https://github.com/Yarish652/SpeechCorrection',
   },
   {
     index: '02',
