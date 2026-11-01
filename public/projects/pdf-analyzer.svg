@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="550" viewBox="0 0 880 550">
+  <style>
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace; }
+    .sans { font-family: 'Space Grotesk', 'Inter', system-ui, 'Segoe UI', Arial, sans-serif; }
+  </style>
+  <rect width="880" height="550" fill="#18191d"/>
+
+  <!-- Header -->
+  <text x="60" y="66" class="mono" font-size="14" letter-spacing="2.4" fill="#8a8c95">LOCAL RAG · CITED ANSWERS</text>
+  <text x="820" y="66" class="mono" font-size="14" fill="#8a8c95" text-anchor="end"><tspan fill="#8ea2ff">●</tspan> streaming</text>
+
+  <!-- The page, with the passages it retrieved -->
+  <rect x="60" y="96" width="240" height="292" rx="8" fill="#efece4"/>
+  <text x="80" y="124" class="mono" font-size="11" fill="#8f8a7d">p. 12 · 3.2 Decoder</text>
+  <g fill="#cfcabd">
+    <rect x="80" y="142" width="200" height="6" rx="3"/>
+    <rect x="80" y="156" width="184" height="6" rx="3"/>
+    <rect x="80" y="170" width="196" height="6" rx="3"/>
+  </g>
+  <rect x="72" y="186" width="216" height="50" rx="5" fill="#8ea2ff" fill-opacity="0.28"/>
+  <g fill="#5a68b8">
+    <rect x="80" y="196" width="196" height="6" rx="3"/>
+    <rect x="80" y="210" width="180" height="6" rx="3"/>
+    <rect x="80" y="224" width="120" height="6" rx="3"/>
+  </g>
+  <rect x="254" y="218" width="26" height="16" rx="4" fill="#4d5bb0"/>
+  <text x="267" y="230" class="mono" font-size="11" fill="#ffffff" text-anchor="middle">1</text>
+  <g fill="#cfcabd">
+    <rect x="80" y="250" width="192" height="6" rx="3"/>
+    <rect x="80" y="264" width="200" height="6" rx="3"/>
+  </g>
+  <rect x="72" y="280" width="216" height="36" rx="5" fill="#8ea2ff" fill-opacity="0.18"/>
+  <g fill="#6c78c0">
+    <rect x="80" y="290" width="188" height="6" rx="3"/>
+    <rect x="80" y="304" width="140" height="6" rx="3"/>
+  </g>
+  <rect x="254" y="296" width="26" height="16" rx="4" fill="#4d5bb0"/>
+  <text x="267" y="308" class="mono" font-size="11" fill="#ffffff" text-anchor="middle">2</text>
+  <g fill="#cfcabd">
+    <rect x="80" y="332" width="196" height="6" rx="3"/>
+    <rect x="80" y="346" width="168" height="6" rx="3"/>
+    <rect x="80" y="360" width="184" height="6" rx="3"/>
+  </g>
+
+  <!-- The answer, citing them -->
+  <rect x="332" y="96" width="488" height="208" rx="14" fill="#202127" stroke="#30323a"/>
+  <text x="356" y="132" class="mono" font-size="12" letter-spacing="1.6" fill="#8a8c95">ANSWER</text>
+  <text x="356" y="170" class="sans" font-size="18" fill="#eceef4">The decoder reads the encoder's output</text>
+  <!-- Citations are tspans in the sentence's own flow, so they stay in
+       place whatever font renders it. -->
+  <text x="356" y="198" class="sans" font-size="18" fill="#eceef4">through cross-attention <tspan class="mono" font-size="15" font-weight="600" fill="#8ea2ff">[1]</tspan>, masked so it</text>
+  <text x="356" y="226" class="sans" font-size="18" fill="#eceef4">can't look ahead <tspan class="mono" font-size="15" font-weight="600" fill="#8ea2ff">[2]</tspan>.</text>
+  <line x1="356" y1="250" x2="796" y2="250" stroke="#30323a"/>
+  <text x="356" y="278" class="mono" font-size="12" fill="#8a8c95">[1] p.12 · 3.2 Decoder     [2] p.13 · 3.2.3 Masking</text>
+
+  <!-- Retrieval -->
+  <text x="332" y="344" class="mono" font-size="13" fill="#8a8c95">MPNet</text>
+  <text x="332" y="370" class="mono" font-size="13" fill="#8a8c95">BM25</text>
+  <path d="M384 340 h10 v26 h-10 M394 353 h16" fill="none" stroke="#8ea2ff" stroke-width="1.5"/>
+  <text x="418" y="358" class="mono" font-size="13" fill="#eceef4">RRF  →  rerank  →  top 3  →  cite</text>
+
+  <!-- Name -->
+  <text x="58" y="458" class="sans" font-size="64" font-weight="700" fill="#eceef4">PDF Analyzer</text>
+  <text x="60" y="500" class="mono" font-size="16" fill="#8ea2ff">hybrid search · ocr for scans · answers you can check</text>
+  <text x="820" y="458" class="mono" font-size="14" letter-spacing="2" fill="#8a8c95" text-anchor="end">HIT@3 0.96</text>
+</svg>

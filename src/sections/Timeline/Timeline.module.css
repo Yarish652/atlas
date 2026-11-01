@@ -2,44 +2,185 @@
   font-size: var(--text-2xl);
 }
 
+.stamp {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+/* ── Controls ────────────────────────────────────────────────────────── */
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out);
+}
+
+.arrow:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+}
+
+.arrow:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.back {
+  transform: scaleX(-1);
+}
+
+/* ── The track ───────────────────────────────────────────────────────── */
+
+/*
+  One row of chapters, scrolled sideways and snapping to each one. Three
+  show at a time on wide screens, two on tablets, and on phones one with the
+  next peeking in from the right — so it always reads as "there's more".
+*/
 .track {
+  --gap: var(--space-6);
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: var(--space-6);
+  gap: var(--gap);
+  margin: 0;
+  padding: 0;
   list-style: none;
-  border-top: 1px solid var(--color-border);
   overflow-x: auto;
+  scroll-snap-type: x mandatory;
   scrollbar-width: none;
+  overscroll-behavior-x: contain;
 }
 
 .track::-webkit-scrollbar {
   display: none;
 }
 
+.track:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 6px;
+  border-radius: var(--radius-sm);
+}
+
 .milestone {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  flex: 1 0 9rem;
-  padding-top: var(--space-5);
+  flex: 0 0 82%;
+  padding-top: var(--space-6);
+  scroll-snap-align: start;
 }
 
-.year {
+@media (min-width: 768px) {
+  .milestone {
+    flex-basis: calc((100% - var(--gap)) / 2);
+  }
+}
+
+@media (min-width: 1024px) {
+  .milestone {
+    flex-basis: calc((100% - 2 * var(--gap)) / 3);
+  }
+}
+
+/*
+  The rail: each chapter draws its stretch of one continuous line, running
+  on into the gap so the stretches join. Past and present are solid; the
+  future is dashed.
+*/
+.milestone::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: calc(var(--gap) * -1);
+  border-top: 1px solid var(--color-border-strong);
+}
+
+.milestone:last-child::after {
+  right: 0;
+}
+
+.milestone[data-kind='next']::after {
+  border-top-style: dashed;
+}
+
+/* A node on the rail at the start of every chapter. */
+.milestone::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+}
+
+.milestone[data-kind='now']::before {
+  background: var(--color-accent);
+  box-shadow: 0 0 0 4px rgba(52, 64, 107, 0.16);
+  animation: now 2.4s var(--ease-out) infinite;
+}
+
+.milestone[data-kind='next']::before {
+  background: var(--color-paper);
+  border: 1px dashed var(--color-accent);
+}
+
+@keyframes now {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 64, 107, 0.28);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(52, 64, 107, 0);
+  }
+}
+
+.chapter {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   color: var(--color-muted);
   transition: color var(--duration-fast) var(--ease-out);
 }
 
-.milestone:hover .year {
+.milestone[data-kind] .chapter {
+  color: var(--color-accent);
+}
+
+.milestone:hover .chapter {
   color: var(--color-ink);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
 }
 
 .description {
   font-size: var(--text-base);
   color: var(--color-ink);
-  max-width: 16rem;
+  max-width: 20rem;
   /* Keeps a single word off the last line ("…and building / tools"). */
   text-wrap: pretty;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .milestone[data-kind='now']::before {
+    animation: none;
+  }
 }

@@ -16,6 +16,11 @@ type SectionProps = {
    * height and bottom rules (the entity's floors) never move.
    */
   reveal?: boolean
+  /**
+   * A full-bleed layer behind the content, spanning the whole section edge
+   * to edge — under the padding too. It is not revealed; it is the ground.
+   */
+  backdrop?: ReactNode
   'aria-label'?: string
   'aria-labelledby'?: string
 }
@@ -26,15 +31,22 @@ export function Section({
   className,
   bordered = false,
   reveal = true,
+  backdrop,
   ...aria
 }: SectionProps) {
   const { ref, inView } = useInView<HTMLElement>({ rootMargin: '0px 0px -10% 0px' })
-  const classes = [styles.section, bordered && styles.bordered, className]
+  const classes = [
+    styles.section,
+    bordered && styles.bordered,
+    backdrop !== undefined && styles.hasBackdrop,
+    className,
+  ]
     .filter(Boolean)
     .join(' ')
 
   return (
     <section id={id} ref={reveal ? ref : undefined} className={classes} {...aria}>
+      {backdrop}
       <Container>
         {reveal ? <div data-reveal={inView ? 'in' : 'pending'}>{children}</div> : children}
       </Container>

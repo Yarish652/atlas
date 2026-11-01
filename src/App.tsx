@@ -3,6 +3,7 @@ import {
   Hero,
   TechStack,
   Projects,
+  OpenSource,
   About,
   Timeline,
   Location,
@@ -18,6 +19,7 @@ function App() {
         <Hero />
         <TechStack />
         <Projects />
+        <OpenSource />
         <About />
         <Timeline />
         <Location />

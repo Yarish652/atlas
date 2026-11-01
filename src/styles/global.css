@@ -213,7 +213,22 @@ ol {
   background-position: top left;
 }
 
-/* Projects rule (drawn by #about's top edge): left gap → the portrait. */
+/* Projects rule (drawn by #opensource's top edge): gap starting at 40% —
+   clear of the stack gap (75%) above, over solid open-source floor below. */
+#opensource {
+  border-top: none;
+  background-image: linear-gradient(
+    to right,
+    var(--color-border) 0 40%,
+    transparent 40% calc(40% + 96px),
+    var(--color-border) calc(40% + 96px) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  background-position: top left;
+}
+
+/* Open-source rule (drawn by #about's top edge): left gap → the portrait. */
 #about {
   border-top: none;
   background-image: linear-gradient(

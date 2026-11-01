@@ -22,6 +22,39 @@
   border-radius: inherit;
 }
 
+/* The animation and its fallback share the frame; the canvas stays
+   invisible until the first frame is drawn, then the fallback unmounts.
+   The frame's own size never changes — it is a physics platform. */
+.animation {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.animationCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+.animationCanvas[data-ready] {
+  opacity: 1;
+}
+
+/* Clicking the student replays its motion. */
+.animationCanvas[data-interactive] {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animationCanvas {
+    transition: none;
+  }
+}
+
 .copy {
   max-width: 34rem;
 }

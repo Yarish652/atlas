@@ -13,6 +13,7 @@ import styles from './Header.module.css'
 const navLinks = [
   { label: 'About', href: '#about' },
   { label: 'Projects', href: '#projects' },
+  { label: 'Open Source', href: '#opensource' },
   { label: 'Experience', href: '#timeline' },
   { label: 'Contact', href: '#contact' },
 ]

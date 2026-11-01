@@ -73,16 +73,17 @@ a fall never chutes through two floors.
 | floor    | gap position           | a fall lands on            |
 |----------|------------------------|----------------------------|
 | hero     | left — ends min(280px, 20%) | stack shelf           |
-| stack    | right — starts 75%     | rightmost project card     |
-| projects | left                   | the About portrait         |
+| stack    | right — starts 75%     | projects floor (the pinboard's small cards no longer sit under it) |
+| projects | right — starts 40%     | open-source floor          |
+| opensource | left                 | the About portrait         |
 | about    | right — 62% (stagger)  | timeline floor             |
 | timeline | right — 75%            | **the globe**              |
 | location | left                   | contact floor              |
 | contact  | right — 75%            | the footer den             |
 | footer   | none — walls both ends | nowhere. The end.          |
 
-**Platforms** (element tops, both edges drop): project cards, the About
-portrait frame, the globe canvas. **Clouds** are transient platforms in the
+**Platforms** (element tops, both edges drop): project cards, the
+open-source receipt, the About portrait frame, the globe canvas. **Clouds** are transient platforms in the
 contact sky. Page edges are **walls** — momentum reflects off them
 (restitution 0.45).
 

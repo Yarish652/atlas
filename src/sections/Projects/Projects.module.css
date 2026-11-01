@@ -2,69 +2,211 @@
   font-size: var(--text-2xl);
 }
 
+/*
+  "View all projects" — a button cut out of the cell field.
+
+  The plate (::before) is sized and placed by CellField.tsx through the
+  --plate-* variables so it covers whole cells exactly: its border sits on
+  the grid lines and its opaque face hides the cells beneath, so the grid
+  visibly runs around it. The fallbacks only apply before the first snap.
+  The link's own box stays the size of its label; the plate is larger, and
+  as part of the link it is part of the click target.
+*/
 .viewAll {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  text-decoration: none;
+  /* The plate overhangs the box by up to a cell; keep the row from crowding it. */
+  margin-inline: var(--space-3);
+}
+
+.viewAll::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: var(--plate-x, -12px);
+  top: var(--plate-y, -8px);
+  width: var(--plate-w, calc(100% + 24px));
+  height: var(--plate-h, calc(100% + 16px));
+  box-sizing: border-box;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-paper);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.viewAll:hover::before {
+  border-color: var(--color-accent);
+  background: var(--color-surface);
+}
+
+.viewAll:focus-visible {
+  outline: none;
+}
+
+.viewAll:focus-visible::before {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.viewAllLabel {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--color-muted);
+  white-space: nowrap;
+  /* Re-centred inside the snapped plate. */
+  translate: var(--plate-dx, 0) var(--plate-dy, 0);
 }
+
+.viewAllLabel svg {
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.viewAll:hover .viewAllLabel svg,
+.viewAll:focus-visible .viewAllLabel svg {
+  transform: translateX(3px);
+}
+
+/*
+  The cell field: the whole section, divider to divider and edge to edge, is
+  one fine matrix. Grid lines are a background sized to one cell (--cell, set
+  by CellField.tsx so whole cells fill the width); the cursor's glow is a
+  canvas over them. It starts 1px down so the section's top rule — and the
+  gap in it the entity falls through — stays drawn and unbroken.
+*/
+.field {
+  --cell: 14px;
+  --grid-line: rgba(22, 21, 15, 0.045);
+  position: absolute;
+  inset: 1px 0 0;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  pointer-events: none;
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* The board is transparent — the cards sit straight on the field. It only
+   clips, so the unpinned panel can grow and shrink inside an easing height. */
+.board {
+  position: relative;
+  overflow: hidden;
+}
+
+/* The pinned cards and the unpinned panel share one grid cell, so the
+   panel covers the cards exactly; the board eases between their heights. */
+.stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+}
+
+.stage > * {
+  grid-area: 1 / 1;
+}
+
+/* Notes scattered across the board: wrapped and centred, every other one
+   pinned a little lower so the row doesn't read as a table. */
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--space-7) var(--space-8);
+  padding: var(--space-8) var(--space-5) var(--space-7);
+  /* Natural height, not stretched to the panel's — the collapse eases the
+     board back to exactly this. */
+  align-self: start;
+}
+
+@media (min-width: 768px) {
+  .cards {
+    padding: var(--space-8) var(--space-7) var(--space-8);
+  }
+
+  .card:nth-child(even) {
+    margin-top: var(--space-6);
+  }
+}
+
+/* ── A pinned card ───────────────────────────────────────────────────── */
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-5);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  gap: var(--space-3);
+  width: 12rem;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
   background: var(--color-surface);
+  /* No border: paper on the board, separated by its own shadow. */
+  box-shadow:
+    0 1px 2px rgba(22, 21, 15, 0.06),
+    0 6px 16px rgba(22, 21, 15, 0.07);
+  rotate: var(--tilt, 0deg);
   transition:
-    border-color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
+    rotate var(--duration-base) var(--ease-out),
+    translate var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    opacity 300ms var(--ease-out);
 }
 
-/* A 2px rise. The card top is a physics platform; the entity's support
-   tolerance absorbs the shift, and a standing ball simply rides it. */
-.card:hover {
-  border-color: var(--color-border-strong);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+/* The pin. Animated by Pinboard.tsx when the card is unpinned, so its
+   resting transform lives in `translate`, the property that animation owns. */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  translate: -50% 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #5a6699, var(--color-accent) 60%);
+  box-shadow: 0 2px 3px rgba(22, 21, 15, 0.28);
+  z-index: 2;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .card,
-  .card:hover {
-    transition: none;
-    transform: none;
-  }
-  .thumbImg,
-  .card:hover .thumbImg,
-  .demo svg,
-  .demo:hover svg {
-    transition: none;
-    transform: none;
-  }
+/* Straightened and lifted, as if someone pressed the pin in. The card top
+   is a physics platform; the rise is within the entity's support tolerance. */
+.card:hover,
+.card:focus-within {
+  rotate: 0deg;
+  translate: 0 -2px;
+  box-shadow:
+    0 2px 4px rgba(22, 21, 15, 0.08),
+    0 12px 28px rgba(22, 21, 15, 0.12);
 }
 
-.body {
-  flex: 1;
+/* While one card is unpinned the rest fall back, so the eye follows the
+   one that's moving. */
+.cards[data-dimmed] .card {
+  opacity: 0.35;
 }
 
-/* The image frame: fixed ratio so covers of any proportion sit identically,
-   subtle inner border so dark art meets cream paper with a seam, and a
-   gentle scale on hover — inside overflow:hidden, so the card's outer
-   geometry (a physics platform) never changes. */
 .thumb {
   position: relative;
   aspect-ratio: 16 / 10;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   background: var(--color-surface-sunken);
   overflow: hidden;
 }
 
 .thumbImg {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -73,22 +215,28 @@
 }
 
 .card:hover .thumbImg {
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 
 .wipBadge {
   position: absolute;
-  top: var(--space-3);
-  left: var(--space-3);
-  padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-border-strong);
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: 1px var(--space-2);
   border-radius: var(--radius-full);
   background: var(--color-surface);
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
+  font-size: 0.625rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--color-muted);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .index {
@@ -99,29 +247,143 @@
 
 .title {
   font-family: var(--font-display);
-  font-size: var(--text-lg);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-snug);
+}
+
+/* The title is the button; its ::after covers the card so the whole card
+   is the target. Focus is drawn on the card, where the eye expects it. */
+.trigger {
+  all: unset;
+  cursor: pointer;
+}
+
+.trigger::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+}
+
+.trigger:focus-visible::after {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 3px;
+}
+
+/* Exactly one line, whatever the copy does. */
+.intro {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── The unpinned card ───────────────────────────────────────────────── */
+
+/* No border and no shadow: a shadow would be clipped by the growing
+   clip-path and pop in at the end. Paper on the board is enough. */
+.detail {
+  position: relative;
+  margin: var(--space-4);
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+@media (min-width: 768px) {
+  .detail {
+    margin: var(--space-5);
+    padding: var(--space-7);
+  }
+}
+
+.detailInner {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 1024px) {
+  .detailInner {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+    gap: var(--space-7);
+    align-items: start;
+  }
+}
+
+.detailMedia {
+  position: relative;
+  max-width: 22rem;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+  overflow: hidden;
+}
+
+.detailCopy {
+  min-width: 0;
+}
+
+.detailTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-snug);
+}
+
+.detailTitle:focus {
+  outline: none;
 }
 
 .description {
   color: var(--color-muted);
   font-size: var(--text-sm);
-  /* The index labels the title, so those two stay paired at the base gap;
-     the description is a new thought and earns a little more air. */
   margin-top: var(--space-1);
 }
 
-/* The action is pinned to the foot of the card so the three cards' links
-   share a baseline whatever length the descriptions run to. */
-.demo,
-.wipNote {
-  margin-top: auto;
-  padding-top: var(--space-3);
+.story {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.story dt {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.story dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tag {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+  color: var(--color-muted);
 }
 
 .demo {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
 }
@@ -130,8 +392,8 @@
   transition: transform var(--duration-fast) var(--ease-out);
 }
 
-.demo:hover svg,
-.demo:focus-visible svg {
+.demo:hover svg:last-child,
+.demo:focus-visible svg:last-child {
   transform: translateX(3px);
 }
 
@@ -139,4 +401,48 @@
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   color: var(--color-muted);
+}
+
+.close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-sunken);
+  color: var(--color-muted);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.close:hover {
+  color: var(--color-ink);
+  background: var(--color-border);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card:hover,
+  .card:focus-within {
+    transition: none;
+    translate: none;
+  }
+  .thumbImg,
+  .card:hover .thumbImg,
+  .demo svg,
+  .demo:hover svg:last-child {
+    transition: none;
+    transform: none;
+  }
 }

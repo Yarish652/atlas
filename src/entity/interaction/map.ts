@@ -33,11 +33,12 @@ export const TARGET_SELECTORS: Record<TargetId, string> = {
  * The gaps are drawn in `styles/global.css` (and Footer.module.css) as
  * background gradients replacing the borders — same formulas, same 96px.
  *
- *   hero      ──gap──════════▌   → stack shelf
- *   stack     ▐═══════──75%──     → the rightmost project card
- *   projects  ──gap──════════▌   → the About portrait
- *   about     ▐════──62%──═══▌   → timeline floor
- *   timeline  ▐═══════──75%──▌   → the globe
+ *   hero        ──gap──════════▌   → stack shelf
+ *   stack       ▐═══════──75%──     → projects floor
+ *   projects    ▐═══──40%──════▌   → open-source floor
+ *   opensource  ──gap──════════▌   → the About portrait
+ *   about       ▐════──62%──═══▌   → timeline floor
+ *   timeline    ▐═══════──75%──▌   → the globe
  *   location  ──gap──════════▌   → contact floor
  *   contact   ▐═══════──75%──▌   → the footer den
  *   footer    ▐══════════════▌   → nowhere. Walls. The end.
@@ -54,7 +55,8 @@ export type RuleSpec = {
 export const RULE_SPECS: RuleSpec[] = [
   { id: 'hero', selector: '#top', gap: 'left' },
   { id: 'stack', selector: '#stack', gap: 'right', gapStartRatio: 0.75 },
-  { id: 'projects', selector: '#projects', gap: 'left' },
+  { id: 'projects', selector: '#projects', gap: 'right', gapStartRatio: 0.4 },
+  { id: 'opensource', selector: '#opensource', gap: 'left' },
   { id: 'about', selector: '#about', gap: 'right', gapStartRatio: 0.62 },
   { id: 'timeline', selector: '#timeline', gap: 'right', gapStartRatio: 0.75 },
   { id: 'location', selector: '#location', gap: 'left' },
@@ -65,6 +67,7 @@ export const RULE_SPECS: RuleSpec[] = [
 /** Platforms: element tops the body can land on and roll along. */
 export const PLATFORM_SPECS: Array<{ idPrefix: string; selector: string }> = [
   { idPrefix: 'card', selector: '#projects article' },
+  { idPrefix: 'receipt', selector: '#opensource figure' },
   { idPrefix: 'portrait', selector: '#about [data-portrait]' },
   { idPrefix: 'globe', selector: '#location canvas' },
 ]

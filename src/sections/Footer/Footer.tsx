@@ -30,6 +30,29 @@ export function Footer() {
           </p>
         </Stack>
 
+        {/* Required by the animation's licence (CC BY 4.0). */}
+        <p className={styles.credit}>
+          Student animation:{' '}
+          <a
+            href="https://rive.app/marketplace/10526-20090-college-student/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="u-link"
+          >
+            “College Student” by animatedom
+          </a>
+          , licensed{' '}
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="u-link"
+          >
+            CC BY 4.0
+          </a>
+          .
+        </p>
+
       </Container>
     </footer>
   )

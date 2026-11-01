@@ -14,7 +14,7 @@ export function Hero() {
         {/* Eyebrow, name and tagline are one identity block — the eyebrow
             modifies the name, so it binds tighter than it separates. */}
         <Stack gap={5}>
-          <p className={styles.eyebrow}>AI Engineer · Researcher · Builder</p>
+          <p className={styles.eyebrow}>AI Engineer · LLM Systems · Builder</p>
 
           <Stack gap={4}>
             <h1 className={styles.name}>Yarish Khan</h1>

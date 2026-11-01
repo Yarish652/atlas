@@ -2,6 +2,18 @@
   padding-block: var(--space-8);
 }
 
+/* The backdrop is the first child, positioned absolutely by its owner;
+   the content is lifted above it. */
+.hasBackdrop {
+  position: relative;
+  isolation: isolate;
+}
+
+.hasBackdrop > :not(:first-child) {
+  position: relative;
+  z-index: 1;
+}
+
 .bordered {
   border-top: 1px solid var(--color-border);
 }

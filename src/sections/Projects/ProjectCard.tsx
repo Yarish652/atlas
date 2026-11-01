@@ -1,30 +1,22 @@
-import { Stack } from '../../components/layout'
-import { ArrowRightIcon } from '../../components/ui'
+import type { CSSProperties, Ref } from 'react'
+import type { Project } from './projectData'
 import styles from './Projects.module.css'
 
 type ProjectCardProps = {
-  index: string
-  title: string
-  description: string
-  /** Cover art. Fixed 16:10 frame; the image scales gently on hover. */
-  image: string
-  imageAlt: string
-  /** Live deployment. Absent while a project is still in progress. */
-  demo?: string
-  wip?: boolean
+  project: Project
+  /** Degrees. Each card is pinned a little crooked; hover straightens it. */
+  tilt: number
+  expanded: boolean
+  onOpen: (card: HTMLElement) => void
+  triggerRef: Ref<HTMLButtonElement>
 }
 
-export function ProjectCard({
-  index,
-  title,
-  description,
-  image,
-  imageAlt,
-  demo,
-  wip = false,
-}: ProjectCardProps) {
+/** A note pinned to the board: cover, title, one line. The rest is behind the pin. */
+export function ProjectCard({ project, tilt, expanded, onOpen, triggerRef }: ProjectCardProps) {
+  const { slug, index, title, intro, image, imageAlt, wip } = project
+
   return (
-    <article className={styles.card}>
+    <article className={styles.card} style={{ '--tilt': `${tilt}deg` } as CSSProperties}>
       <div className={styles.thumb}>
         <img
           className={styles.thumbImg}
@@ -35,27 +27,32 @@ export function ProjectCard({
           width={880}
           height={550}
         />
-        {wip && <span className={styles.wipBadge}>In progress</span>}
+        {wip && <span className={styles.wipBadge}>WIP</span>}
       </div>
 
-      <Stack gap={2} className={styles.body}>
+      <div className={styles.body}>
         <span className={styles.index}>{index}</span>
-        <h3 className={styles.title}>{title}</h3>
-        <p className={styles.description}>{description}</p>
-
-        {demo ? (
-          <a
-            href={demo}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.demo}
+        <h3 className={styles.title}>
+          {/* The button's ::after stretches over the whole card, so the card
+              is one big target while the accessible name stays the title. */}
+          <button
+            ref={triggerRef}
+            type="button"
+            className={styles.trigger}
+            aria-expanded={expanded}
+            aria-controls={`project-${slug}`}
+            onClick={(e) => {
+              const card = e.currentTarget.closest('article')
+              if (card) onOpen(card)
+            }}
           >
-            Live demo <ArrowRightIcon width={14} height={14} />
-          </a>
-        ) : (
-          <span className={styles.wipNote}>Coming soon</span>
-        )}
-      </Stack>
+            {title}
+          </button>
+        </h3>
+        <p className={styles.intro} title={intro}>
+          {intro}
+        </p>
+      </div>
     </article>
   )
 }
