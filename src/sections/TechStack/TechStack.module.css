@@ -87,6 +87,34 @@
     translate var(--duration-fast) var(--ease-out);
 }
 
+/* Tooltips open toward the middle of the row, so items in the right half
+   anchor to their right edge instead. Otherwise the hidden tooltips run
+   past the viewport and cause sideways scroll on phones. Width is also
+   capped so a long tip wraps instead of overflowing. */
+.item::after {
+  width: max-content;
+  max-width: 14rem;
+  white-space: normal;
+}
+
+.item:nth-child(4n + 3)::after,
+.item:nth-child(4n + 4)::after {
+  left: auto;
+  right: 0;
+}
+
+@media (min-width: 1024px) {
+  .item:nth-child(4n + 3)::after,
+  .item:nth-child(4n + 4)::after {
+    left: 0;
+    right: auto;
+  }
+  .item:nth-child(n + 5)::after {
+    left: auto;
+    right: 0;
+  }
+}
+
 .item:hover::after,
 .item:focus-visible::after {
   opacity: 1;
